@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <title>Modo Buenaventura — Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">MB</div>
+        <div><strong>Modo Buenaventura</strong><span>Fase 1 · Semanas 1–4</span></div>
+      </div>
+      <nav>
+        <button class="nav-btn active" data-view="dashboard">◈ <span>Hoy</span></button>
+        <button class="nav-btn" data-view="nutrition">♨ <span>Nutrición</span></button>
+        <button class="nav-btn" data-view="training">↯ <span>Entrenamiento</span></button>
+        <button class="nav-btn" data-view="calendar">▦ <span>28 días</span></button>
+        <button class="nav-btn" data-view="history">◷ <span>Historial</span></button>
+        <button class="nav-btn" data-view="plan">◎ <span>Plan 1–4</span></button>
+      </nav>
+      <div class="sidebar-note">
+        <b>Regla del tracker</b>
+        <p>Registra lo que realmente hiciste. La app calcula y orienta; no sustituye valoración profesional.</p>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">CONTROL DIARIO</p>
+          <h1 id="pageTitle">Tu día, en números.</h1>
+        </div>
+        <div class="date-pill" id="todayLabel"></div>
+      </header>
+
+      <section id="dashboard" class="view active">
+        <div class="hero">
+          <div>
+            <span class="tag">FASE 1 · 4 SEMANAS</span>
+            <h2>Constancia > perfección.</h2>
+            <p>Registra comida, entrenamiento, agua, peso y sensaciones. Tu panel te devuelve un resumen claro y consejos accionables.</p>
+          </div>
+          <div class="hero-ring"><span id="calProgress">0%</span><small>objetivo kcal</small></div>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat"><span>Calorías</span><strong id="dashKcal">0</strong><small>/ 1.500–1.700 kcal</small></article>
+          <article class="stat"><span>Proteína</span><strong id="dashProtein">0 g</strong><small>estimada</small></article>
+          <article class="stat"><span>Entrenamiento</span><strong id="dashWorkout">Pendiente</strong><small id="dashWorkoutSub">según el día</small></article>
+          <article class="stat"><span>Peso</span><strong id="dashWeight">—</strong><small>kg · último registro</small></article>
+        </div>
+
+        <div class="two-col">
+          <article class="card">
+            <div class="card-head"><div><span class="eyebrow">CHECK-IN</span><h3>¿Cómo va el día?</h3></div><button class="ghost" id="editCheckin">Editar</button></div>
+            <div class="checkin-row">
+              <label>Peso (kg)<input id="weightInput" type="number" step="0.1" min="0" placeholder="98"></label>
+              <label>Agua (L)<input id="waterInput" type="number" step="0.1" min="0" placeholder="2.0"></label>
+              <label>Energía
+                <select id="energyInput"><option value="">—</option><option>1 · Muy baja</option><option>2 · Baja</option><option>3 · Normal</option><option>4 · Buena</option><option>5 · Excelente</option></select>
+              </label>
+            </div>
+            <button class="primary" id="saveCheckin">Guardar check-in</button>
+          </article>
+          <article class="card advice-card">
+            <div class="card-head"><div><span class="eyebrow">COACH</span><h3>Consejo de hoy</h3></div><span class="coach-dot"></span></div>
+            <div id="adviceText" class="advice">Registra una comida para recibir una recomendación personalizada.</div>
+          </article>
+          <article class="card ai-card">
+            <div class="card-head"><div><span class="eyebrow">IA NUTRICIONAL</span><h3>Coach con IA</h3></div><span id="aiQuota" class="tag">10 consultas/día</span></div>
+            <div class="coach-memory">
+              <div><b>Memoria del coach</b><span id="memorySummary">Construyendo tu historial…</span></div>
+              <button class="ghost" id="clearAIMemory">Reiniciar memoria IA</button>
+            </div>
+            <p class="muted">Conecta una API gratuita para interpretar comidas complejas y darte consejos. La clave se guarda solo en este navegador.</p>
+            <div class="ai-settings">
+              <label>Proveedor
+                <select id="aiProvider"><option value="groq">Groq · recomendado</option><option value="gemini">Google Gemini</option></select>
+              </label>
+              <label>API Key
+                <input id="aiKey" type="password" placeholder="Pega aquí tu API key">
+              </label>
+            </div>
+            <div class="button-row"><button class="primary" id="saveAI">Guardar conexión</button><button class="ghost" id="testAI">Probar IA</button></div>
+            <div id="aiStatus" class="muted">Sin conexión configurada.</div>
+          </article>
+        </div>
+
+        <article class="card">
+          <div class="card-head"><div><span class="eyebrow">RUTA DEL DÍA</span><h3 id="dayPlanTitle">Cargando…</h3></div><button class="ghost" data-jump="training">Ver entrenamiento</button></div>
+          <div id="dayPlan" class="day-plan"></div>
+        </article>
+      </section>
+
+      <section id="nutrition" class="view">
+        <div class="section-title"><div><span class="eyebrow">NUTRICIÓN</span><h2>Lo que comiste, convertido en datos.</h2></div><div class="button-row"><button class="ghost" id="exportData">Exportar</button><button class="primary" id="openFood">+ Añadir alimento</button></div></div>
+        <div class="macro-board">
+          <div class="macro-main"><span>Calorías consumidas</span><strong id="nutKcal">0</strong><div class="progress"><i id="kcalBar"></i></div><small>Meta del plan: 1.500–1.700 kcal/día</small></div>
+          <div><span>Proteína</span><strong id="nutProtein">0 g</strong></div>
+          <div><span>Carbohidratos</span><strong id="nutCarbs">0 g</strong></div>
+          <div><span>Grasas</span><strong id="nutFat">0 g</strong></div>
+        </div>
+        <article class="card">
+          <div class="card-head"><div><span class="eyebrow">REGISTRO</span><h3>Comidas de hoy</h3></div><span id="foodCount" class="muted"></span></div>
+          <div id="foodList" class="food-list"></div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><span class="eyebrow">IA</span><h3>Analizar una comida con IA</h3></div></div>
+          <label>Escribe libremente lo que comiste
+            <textarea id="aiMealText" rows="3" placeholder="Ej.: En el almuerzo comí una pechuga de pollo a la plancha, media taza de arroz, ensalada con aguacate y una gaseosa pequeña."></textarea>
+          </label>
+          <div class="button-row"><button class="primary" id="aiAnalyzeMeal">✦ Analizar con IA</button><button class="ghost" id="aiAdvice">Obtener consejo</button></div>
+          <div id="aiResult" class="ai-preview">La IA devolverá alimentos, cantidades, kcal/macros estimados y una explicación breve.</div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><span class="eyebrow">NOTA</span><h3>Cómo interpreta la app</h3></div></div>
+          <p class="muted">Los valores nutricionales son estimaciones. Puedes editar las cantidades para acercarlas a la etiqueta o a tu preparación real. El tracker no diagnostica déficits ni calcula una necesidad médica individual.</p>
+        </article>
+      </section>
+
+      <section id="training" class="view">
+        <div class="section-title"><div><span class="eyebrow">HIRT EN CASA</span><h2 id="trainingTitle">Entrenamiento</h2></div><span class="tag" id="weekTag">SEMANA 1</span></div>
+        <div id="trainingContent"></div>
+      </section>
+
+
+
+      <section id="calendar" class="view">
+        <div class="section-title"><div><span class="eyebrow">CALENDARIO</span><h2>Los 28 días, de un vistazo.</h2></div><span class="tag" id="calendarWeek">SEMANA 1</span></div>
+        <article class="card">
+          <div class="calendar-head"><div><b>Inicio de Fase 1</b><input id="startDate" type="date"></div><button class="primary" id="saveStart">Guardar inicio</button></div>
+          <p class="muted">Elige la fecha en que realmente comienzas. La app calculará automáticamente semana, día y entrenamiento.</p>
+          <div id="calendarGrid" class="calendar-grid"></div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><span class="eyebrow">PUNTUACIÓN</span><h3>¿Cómo se calcula?</h3></div></div>
+          <p class="muted">La puntuación es orientativa: combina registro de nutrición, check-in y entrenamiento. No es una medida médica ni una estimación de grasa corporal.</p>
+        </article>
+      </section>
+      <section id="history" class="view">
+        <div class="section-title"><div><span class="eyebrow">SEGUIMIENTO</span><h2>Tu historial local.</h2></div><button class="danger ghost" id="clearData">Borrar datos</button></div>
+        <article class="card">
+          <div id="historyList" class="history-list"></div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><span class="eyebrow">COACH</span><h3>Memoria y conversaciones recientes</h3></div></div>
+          <div id="aiMemoryList" class="memory-list"></div>
+        </article>
+      </section>
+
+      <section id="plan" class="view">
+        <div class="section-title"><div><span class="eyebrow">HOJA DE RUTA</span><h2>Semanas 1–4</h2></div></div>
+        <div class="weeks" id="weeks"></div>
+        <article class="safety">
+          <strong>⚠ Señales para detener el entrenamiento</strong>
+          <p>Dolor de pecho, desmayo o sensación de desmayo, dificultad respiratoria fuera de lo habitual, palpitaciones intensas o síntomas que empeoran requieren detener la sesión y buscar atención médica.</p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="foodDialog">
+    <form method="dialog" id="foodForm" class="dialog-card">
+      <div class="card-head"><div><span class="eyebrow">NUEVO REGISTRO</span><h3>Añadir alimento</h3></div><button type="button" class="icon-btn" id="closeFood">×</button></div>
+      <label>Comida
+        <select id="foodPreset">
+          <option value="custom">Personalizado</option>
+          <option value="huevo">Huevo · 1 unidad</option>
+          <option value="pollo">Muslo de pollo · 150 g</option>
+          <option value="carne">Carne de res · 150 g</option>
+          <option value="higado">Hígado de res · 150 g</option>
+          <option value="atun">Atún en agua · 1 lata</option>
+          <option value="aguacate">Aguacate · 50 g</option>
+          <option value="aceite">Aceite de oliva · 1 cucharadita</option>
+          <option value="arroz">Arroz cocido · 100 g</option>
+          <option value="platano">Plátano maduro · 100 g</option>
+          <option value="avena">Avena · 40 g</option>
+        </select>
+      </label>
+      <label>Describe lo que comiste <textarea id="mealText" rows="3" placeholder="Ej.: Almorcé 2 huevos, 200 g de pollo, medio aguacate y 100 g de arroz"></textarea></label>
+      <div class="ai-preview" id="mealPreview">Escribe una comida y pulsa <b>Analizar comida</b>.</div>
+      <button type="button" class="primary full" id="analyzeMeal">✦ Analizar comida</button>
+      <div class="manual-toggle" id="manualToggle">¿Prefieres ajustar los datos manualmente? Mostrar campos avanzados</div>
+      <div id="manualFields" class="manual-fields">
+      <label>Nombre <input id="foodName" placeholder="Ej. huevos revueltos"></label>
+      <div class="form-grid">
+        <label>Porciones <input id="foodQty" type="number" value="1" min="0.1" step="0.1"></label>
+        <label>Calorías / porción <input id="foodKcal" type="number" value="0" min="0"></label>
+        <label>Proteína (g) <input id="foodProtein" type="number" value="0" min="0" step="0.1"></label>
+        <label>Carbohidratos (g) <input id="foodCarbs" type="number" value="0" min="0" step="0.1"></label>
+        <label>Grasas (g) <input id="foodFat" type="number" value="0" min="0" step="0.1"></label>
+        <label>Momento
+          <select id="foodMeal"><option>Almuerzo</option><option>Refrigerio</option><option>Cena</option><option>Otro</option></select>
+        </label>
+      </div>
+      </div>
+      </div>
+      <button class="primary full" type="submit">Guardar alimento</button>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
